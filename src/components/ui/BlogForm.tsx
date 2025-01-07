@@ -1,16 +1,8 @@
 "use client";
 
+import { createBlog } from "@/actions/createBlog";
+import { FormValues } from "@/types";
 import { useForm } from "react-hook-form";
-
-type FormValues = {
-  id: string;
-  title: string;
-  description: string;
-  publish_date: string;
-  author_name: string;
-  blog_image: string;
-  total_likes: string;
-};
 
 const CreateBlogForm = () => {
   const {
@@ -20,7 +12,15 @@ const CreateBlogForm = () => {
   } = useForm<FormValues>();
 
   const onSubmit = async (data: FormValues) => {
-    console.log(data);
+    const res = await fetch("http://localhost:5000/blogs");
+    const blogs = await res.json();
+    data.id = JSON.stringify(blogs.length + 1);
+    data.total_likes = "100";
+    try {
+      await createBlog(data);
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   };
 
   return (
